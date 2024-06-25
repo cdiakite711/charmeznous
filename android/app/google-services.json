@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "195138511967",
+    "project_id": "charmeznous-3d3b8",
+    "storage_bucket": "charmeznous-3d3b8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:195138511967:android:3746883c2f9585cf9ee7ea",
+        "android_client_info": {
+          "package_name": "com.charmeznous.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDElFCUJn9GSptp_lU8i-keZcRYEtGGBpQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
