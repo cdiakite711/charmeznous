@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'swipeandmatch.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -28,6 +29,7 @@ class _HomeState extends State<Home> {
     DocumentSnapshot userDoc = await _firestore.collection('users').doc(_user.uid).get();
     setState(() {
       _userData = userDoc.data() as Map<String, dynamic>;
+      print("Genre de l'utilisateur: ${_userData['gender']}"); // Ajoutez cette ligne
     });
   }
 
@@ -63,8 +65,8 @@ class _HomeState extends State<Home> {
             label: 'Accueil',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Recherche',
+            icon: Icon(Icons.favorite),
+            label: 'Swipe & Match',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.message),
@@ -87,7 +89,7 @@ class _HomeState extends State<Home> {
       case 0:
         return _buildHomePage();
       case 1:
-        return _buildSearchPage();
+        return SwipeAndMatchPage();
       case 2:
         return _buildMessagesPage();
       case 3:
@@ -113,7 +115,10 @@ class _HomeState extends State<Home> {
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
-              // TODO: Implémenter la logique pour commencer à swiper
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SwipeAndMatchPage()),
+              );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFFfd6c9e),
@@ -145,7 +150,11 @@ class _HomeState extends State<Home> {
           Center(
             child: CircleAvatar(
               radius: 60,
-              backgroundImage: NetworkImage(_userData['profileImageUrl'] ?? 'https://via.placeholder.com/150'),
+              backgroundImage: _userData['profileImageUrl'] != null && _userData['profileImageUrl'].isNotEmpty
+                  ? NetworkImage(_userData['profileImageUrl'])
+                  : AssetImage(_userData['gender'] == 'Féminin'
+                      ? 'assets/images/default_female_profile.png'
+                      : 'assets/images/default_male_profile.png') as ImageProvider,
             ),
           ),
           const SizedBox(height: 20),

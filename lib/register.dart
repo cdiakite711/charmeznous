@@ -58,9 +58,12 @@ class _RegisterState extends State<Register> {
       'Capesterre-Belle-Eau', 'Le Moule', 'Lamentin', 'Basse-Terre', 'Saint-Claude'
     ],
   };
-  final List<String> _orientations = ['Hétérosexuel', 'Lesbienne', 'Gay', 'Bisexuel (féminin)'];
   final List<String> _relationTypes = ['Red Charmeur', 'Blue Charmeur'];
   final List<String> _genders = ['Masculin', 'Féminin'];
+  final Map<String, List<String>> _orientations = {
+    'Masculin': ['Hétérosexuel', 'Gay'],
+    'Féminin': ['Hétérosexuelle', 'Lesbienne', 'Bisexuelle (féminin)'],
+  };
 
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
@@ -272,6 +275,7 @@ class _RegisterState extends State<Register> {
                         onChanged: (value) {
                           setState(() {
                             _selectedGender = value;
+                            _selectedOrientation = null; // Réinitialiser l'orientation lors du changement de genre
                           });
                         },
                         validator: (value) {
@@ -285,12 +289,14 @@ class _RegisterState extends State<Register> {
                       DropdownButtonFormField<String>(
                         decoration: _inputDecoration('Orientation sexuelle', icon: Icons.favorite),
                         value: _selectedOrientation,
-                        items: _orientations
-                            .map((value) => DropdownMenuItem(
-                                  value: value,
-                                  child: Text(value),
-                                ))
-                            .toList(),
+                        items: _selectedGender != null
+                            ? _orientations[_selectedGender]!
+                                .map((value) => DropdownMenuItem(
+                                      value: value,
+                                      child: Text(value),
+                                    ))
+                                .toList()
+                            : [],
                         onChanged: (value) {
                           setState(() {
                             _selectedOrientation = value;
@@ -537,12 +543,17 @@ class _RegisterState extends State<Register> {
         password: _passwordController.text,
       );
 
-      String? profileImageUrl;
+      String profileImageUrl;
       if (_profileImage != null) {
         Reference ref = _storage.ref().child('profile_images/${userCredential.user!.uid}');
         UploadTask uploadTask = ref.putFile(_profileImage!);
         TaskSnapshot snapshot = await uploadTask;
         profileImageUrl = await snapshot.ref.getDownloadURL();
+      } else {
+        // Utiliser l'image par défaut en fonction du genre
+        profileImageUrl = _selectedGender == 'Féminin'
+            ? 'assets/images/default_female_profile.png'
+            : 'assets/images/default_male_profile.png';
       }
 
       await _firestore.collection('users').doc(userCredential.user!.uid).set({
